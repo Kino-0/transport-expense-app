@@ -23,9 +23,6 @@ const STATUS_DELETED = 9; // 削除
  */
 class ApiService {
     constructor(supabaseClient) {
-        if (!supabaseClient) {
-            throw new Error("Supabase client is not initialized.");
-        }
         this.supabase = supabaseClient;
     }
 
@@ -393,7 +390,7 @@ class AppController {
             this.ui.showDetailsModal(detailsData);
         } catch (error) {
             console.error("詳細の読み込みエラー:", error);
-            alert(`詳細の取得に失敗しました: ${error.message}`);
+            alert(error.message);
         } finally {
             this.ui.setLoading(button, false);
         }
@@ -419,7 +416,7 @@ class AppController {
             this.loadHistory();
         } catch (error) {
             console.error("申請処理エラー:", error);
-            this.ui.showMessage(this.ui.dom.submitMessage, `申請に失敗しました: ${error.message}`);
+            this.ui.showMessage(this.ui.dom.submitMessage, error.message);
         } finally {
             this.ui.setLoading(this.ui.dom.submitButton, false);
         }
@@ -435,7 +432,7 @@ class AppController {
             this.ui.renderHistory(historyData);
         } catch (error) {
             console.error("履歴の読み込みエラー:", error);
-            tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-red-500">履歴の読み込みに失敗しました: ${error.message}</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-red-500">${error.message}</td></tr>`;
         }
     }
 
