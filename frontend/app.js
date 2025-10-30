@@ -137,7 +137,7 @@ class UIManager {
 
     showMessage(element, message, isError = true) {
         if (!element) return;
-        element.textContent = message;
+        element.innerHTML = message.replace(/\n/g, '<br>');
         element.classList.toggle('text-red-500', isError);
         element.classList.toggle('text-green-600', !isError);
         this.show(element);
@@ -460,14 +460,14 @@ class AppController {
             };
 
             // バリデーションの実行
-            checkRule(values.useDate, 'useDate', `${i + 1}行目の日付が必須です。`);
-            checkRule(values.purpose, 'purpose', `${i + 1}行目の業務・訪問先が必須です。`);
-            checkRule(values.lineName, 'lineName', `${i + 1}行目の利用路線が必須です。`);
-            checkRule(values.departure, 'departure', `${i + 1}行目の区間(出発)が必須です。`);
-            checkRule(values.arrival, 'arrival', `${i + 1}行目の区間(到着)が必須です。`);
+            checkRule(values.useDate, 'useDate', `${i + 1}行目: 日付を入力してください。`);
+            checkRule(values.purpose, 'purpose', `${i + 1}行目: 業務・訪問先を入力してください。`);
+            checkRule(values.lineName, 'lineName', `${i + 1}行目: 利用路線を入力してください。`);
+            checkRule(values.departure, 'departure', `${i + 1}行目: 区間(出発)を入力してください。`);
+            checkRule(values.arrival, 'arrival', `${i + 1}行目: 区間(到着)を入力してください。`);
 
             if (values.unitPrice <= 0) {
-                rowErrors.push(`${i + 1}行目の単価は0より大きい数値です。`);
+                rowErrors.push(`${i + 1}行目: 単価は1以上の数値を入力してください。`);
                 this.ui.highlightErrorField(getInput('unitPrice'));
             }
 
