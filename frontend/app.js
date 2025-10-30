@@ -348,6 +348,7 @@ class AppController {
         this.state.currentUser = null;
         this.ui.updateUserInfo({});
         this.ui.toggleMainScreen(false);
+        this.ui.resetApplicationForm();
     }
 
     handleNavClick(e) {
