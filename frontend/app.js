@@ -303,7 +303,7 @@ class AppController {
         const tableBody = this.ui.dom.tableBody;
         tableBody.addEventListener('input', (e) => this.handleTableEvent(e));
         tableBody.addEventListener('change', (e) => this.handleTableEvent(e));
-
+        tableBody.addEventListener('click', (e) => this.handleTableClick(e));
         this.ui.dom.historyTableBody.addEventListener('click', (e) => this.handleShowDetails(e));
 
         [this.ui.dom.modalOverlay,
@@ -366,6 +366,16 @@ class AppController {
         if ((role === 'unitPrice' && e.type === 'input') || (role === 'isRoundTrip' && e.type === 'change')) {
             this.ui.updateLineTotal(tr);
         }
+    }
+
+    handleTableClick(e) {
+        const deleteButton = e.target.closest('[data-role="deleteRow"]');
+        if (!deleteButton) return;
+
+        const tr = deleteButton.closest('tr');
+        if (!tr) return;
+
+        tr.remove();
     }
 
     async handleShowDetails(e) {

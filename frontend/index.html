@@ -139,6 +139,9 @@
                                 <th scope="col"
                                     class="px-4 py-3 text-left text-xs font-medium text-gray-700 tracking-wider whitespace-nowrap bg-gray-100 right-0 border-l border-gray-300">
                                     合計金額</th>
+                                <th scope="col"
+                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 tracking-wider whitespace-nowrap bg-gray-100">
+                                    削除</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200" id="table-body">
@@ -209,6 +212,12 @@
             <td class="p-1 right-0 bg-white border-l border-gray-300">
                 <input type="number" data-role="lineTotal" readonly placeholder="0"
                     class="w-28 p-2 border-0 bg-gray-100 rounded-md font-bold text-gray-900 text-right">
+            </td>
+            <td class="p-1 text-center align-middle">
+                <button type="button" data-role="deleteRow" title="この行を削除"
+                    class="text-gray-400 hover:text-red-600 transition-colors duration-150">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
             </td>
         </tr>
     </template>
