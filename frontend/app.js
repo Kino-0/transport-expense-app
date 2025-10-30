@@ -441,21 +441,29 @@ class AppController {
         const allErrors = [];
         const rows = this.ui.dom.tableBody.querySelectorAll('tr');
 
+        const getVal = (tr, role) => tr.querySelector(`[data-role="${role}"]`)?.value.trim() ?? '';
+        const getChecked = (tr, role) => tr.querySelector(`[data-role="${role}"]`)?.checked ?? false;
+        const getNum = (tr, role) => parseInt(tr.querySelector(`[data-role="${role}"]`)?.value, 10) || 0;
+        const getInput = (tr, role) => tr.querySelector(`[data-role="${role}"]`);
+
+        const addErrorIfEmpty = (tr, rowErrors, value, inputRole, msg) => {
+            if (!value) {
+                rowErrors.push(msg);
+                this.ui.highlightErrorField(getInput(tr, inputRole));
+            }
+        };
+
         for (let i = 0; i < rows.length; i++) {
             const tr = rows[i];
-            const getVal = (role) => tr.querySelector(`[data-role="${role}"]`)?.value.trim() ?? '';
-            const getChecked = (role) => tr.querySelector(`[data-role="${role}"]`)?.checked ?? false;
-            const getNum = (role) => parseInt(tr.querySelector(`[data-role="${role}"]`)?.value, 10) || 0;
-            const getInput = (role) => tr.querySelector(`[data-role="${role}"]`);
 
             const values = {
-                useDate: getVal('useDate'),
-                purpose: getVal('purpose'),
-                lineName: getVal('lineName'),
-                departure: getVal('departure'),
-                arrival: getVal('arrival'),
-                unitPrice: getNum('unitPrice'),
-                isRoundTrip: getChecked('isRoundTrip')
+                useDate: getVal(tr, 'useDate'),
+                purpose: getVal(tr, 'purpose'),
+                lineName: getVal(tr, 'lineName'),
+                departure: getVal(tr, 'departure'),
+                arrival: getVal(tr, 'arrival'),
+                unitPrice: getNum(tr, 'unitPrice'),
+                isRoundTrip: getChecked(tr, 'isRoundTrip')
             };
 
             const isRowEmpty = !values.useDate && !values.purpose && !values.lineName &&
@@ -463,24 +471,17 @@ class AppController {
             if (isRowEmpty) continue;
 
             const rowErrors = [];
-            // 検証ヘルパー
-            const checkRule = (value, inputRole, msg) => {
-                if (!value) {
-                    rowErrors.push(msg);
-                    this.ui.highlightErrorField(getInput(inputRole));
-                }
-            };
 
             // バリデーションの実行
-            checkRule(values.useDate, 'useDate', `${i + 1}行目: 日付を入力してください。`);
-            checkRule(values.purpose, 'purpose', `${i + 1}行目: 業務・訪問先を入力してください。`);
-            checkRule(values.lineName, 'lineName', `${i + 1}行目: 利用路線を入力してください。`);
-            checkRule(values.departure, 'departure', `${i + 1}行目: 区間(出発)を入力してください。`);
-            checkRule(values.arrival, 'arrival', `${i + 1}行目: 区間(到着)を入力してください。`);
+            addErrorIfEmpty(tr, rowErrors, values.useDate, 'useDate', `${i + 1}行目: 日付を入力してください。`);
+            addErrorIfEmpty(tr, rowErrors, values.purpose, 'purpose', `${i + 1}行目: 業務・訪問先を入力してください。`);
+            addErrorIfEmpty(tr, rowErrors, values.lineName, 'lineName', `${i + 1}行目: 利用路線を入力してください。`);
+            addErrorIfEmpty(tr, rowErrors, values.departure, 'departure', `${i + 1}行目: 区間(出発)を入力してください。`);
+            addErrorIfEmpty(tr, rowErrors, values.arrival, 'arrival', `${i + 1}行目: 区間(到着)を入力してください。`);
 
             if (values.unitPrice <= 0) {
                 rowErrors.push(`${i + 1}行目: 単価は1以上の数値を入力してください。`);
-                this.ui.highlightErrorField(getInput('unitPrice'));
+                this.ui.highlightErrorField(getInput(tr, 'unitPrice'));
             }
 
             if (rowErrors.length > 0) {
