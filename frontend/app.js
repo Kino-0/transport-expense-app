@@ -182,7 +182,11 @@ class UIManager {
     updateLineTotal(tr) {
         const unitPrice = parseInt(tr.querySelector('[data-role="unitPrice"]').value, 10) || 0;
         const isRoundTrip = tr.querySelector('[data-role="isRoundTrip"]').checked;
-        tr.querySelector('[data-role="lineTotal"]').value = unitPrice * (isRoundTrip ? 2 : 1);
+        const total = unitPrice * (isRoundTrip ? 2 : 1);
+        const totalElement = tr.querySelector('[data-role="lineTotal"]');
+        if (totalElement) {
+            totalElement.textContent = total.toLocaleString() + ' 円';
+        }
     }
 
     resetApplicationForm() {
