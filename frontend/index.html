@@ -1,308 +1,506 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>交通費申請</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* バリデーションエラー用スタイル */
-        input[aria-invalid="true"] {
-            border-color: #EF4444;
-        }
+      /* バリデーションエラー用スタイル */
+      input[aria-invalid="true"] {
+        border-color: #ef4444;
+      }
     </style>
-</head>
+  </head>
 
-<body class="bg-gray-100">
-
+  <body class="bg-gray-100">
     <!-- ログイン画面 -->
-    <div id="login-screen" class="min-h-screen flex items-center justify-center p-4">
-        <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-sm">
-            <h1 class="text-3xl font-bold mb-8 text-center">交通費申請システム</h1>
+    <div
+      id="login-screen"
+      class="flex min-h-screen items-center justify-center p-4"
+    >
+      <div class="w-full max-w-sm rounded-lg bg-white p-8 shadow-lg">
+        <h1 class="mb-8 text-center text-3xl font-bold">交通費申請システム</h1>
 
-            <div class="mb-4">
-                <label for="emp-id" class="block text-sm mb-2">従業員コード (ID)</label>
-                <input type="text" id="emp-id" name="emp-id"
-                    class="w-full p-3 border border-gray-300 rounded-md shadow-sm"
-                    placeholder="例: 1001">
-            </div>
-            <button id="login-button"
-                class="w-full bg-indigo-600 text-white p-3 rounded-md font-semibold hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                ログイン
-            </button>
-            <p id="login-error" class="text-red-600 text-sm mt-3 text-center hidden"></p>
+        <div class="mb-4">
+          <label for="emp-id" class="mb-2 block text-sm"
+            >従業員コード (ID)</label
+          >
+          <input
+            type="text"
+            id="emp-id"
+            name="emp-id"
+            class="w-full rounded-md border border-gray-300 p-3 shadow-sm"
+            placeholder="例: 1001"
+          />
         </div>
+        <button
+          id="login-button"
+          class="w-full rounded-md bg-indigo-600 p-3 font-semibold text-white hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none"
+        >
+          ログイン
+        </button>
+        <p
+          id="login-error"
+          class="mt-3 hidden text-center text-sm text-red-600"
+        ></p>
+      </div>
     </div>
 
     <!-- メイン画面 -->
-    <div id="main-screen" class="min-h-screen hidden">
-
-        <!-- ヘッダー -->
-        <header class="bg-white shadow-md sticky top-0 z-10">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-center py-4">
-                    <div>
-                        <span class="text-sm text-gray-800">ようこそ、</span>
-                        <span id="user-name" class="font-semibold"></span>
-                        <span class="text-sm text-gray-800">さん (部署: </span>
-                        <span id="user-dept" class="font-semibold"></span>
-                        <span class="text-sm text-gray-800">)</span>
-                    </div>
-                    <button id="logout-button"
-                        class="text-sm text-indigo-600 hover:text-indigo-800 font-medium transition duration-150 ease-in-out">ログアウト</button>
-                </div>
+    <div id="main-screen" class="hidden min-h-screen">
+      <!-- ヘッダー -->
+      <header class="sticky top-0 z-10 bg-white shadow-md">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div class="flex items-center justify-between py-4">
+            <div>
+              <span class="text-sm text-gray-800">ようこそ、</span>
+              <span id="user-name" class="font-semibold"></span>
+              <span class="text-sm text-gray-800">さん (部署: </span>
+              <span id="user-dept" class="font-semibold"></span>
+              <span class="text-sm text-gray-800">)</span>
             </div>
-            <!-- ナビゲーション -->
-            <nav class="border-b border-gray-200">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="flex space-x-4" id="nav-container">
-                        <button id="nav-history" data-target="history-screen"
-                            class="nav-tab whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm">
-                            過去申請一覧
-                        </button>
-                        <button id="nav-new" data-target="main-content"
-                            class="nav-tab whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm">
-                            新規申請
-                        </button>
-                    </div>
-                </div>
-            </nav>
-        </header>
-
-        <!-- メインコンテンツ -->
-        <main class="max-w-7xl mx-auto p-4 md:p-8 w-full">
-
-            <!-- 過去申請一覧 -->
-            <div id="history-screen" class="page-content bg-white p-6 rounded-lg shadow-lg">
-                <h1 class="text-2xl font-bold text-gray-800 mb-6">過去申請一覧</h1>
-                <div class="overflow-x-auto border border-gray-200 rounded-lg">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th
-                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 tracking-wider whitespace-nowrap">
-                                    申請ID</th>
-                                <th
-                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 tracking-wider whitespace-nowrap">
-                                    申請日</th>
-                                <th
-                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 tracking-wider whitespace-nowrap">
-                                    合計金額</th>
-                                <th
-                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 tracking-wider whitespace-nowrap">
-                                    ステータス</th>
-                                <th
-                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 tracking-wider whitespace-nowrap">
-                                    詳細</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200" id="history-table-body">
-                        </tbody>
-                    </table>
-                </div>
+            <button
+              id="logout-button"
+              class="text-sm font-medium text-indigo-600 transition duration-150 ease-in-out hover:text-indigo-800"
+            >
+              ログアウト
+            </button>
+          </div>
+        </div>
+        <!-- ナビゲーション -->
+        <nav class="border-b border-gray-200">
+          <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="flex space-x-4" id="nav-container">
+              <button
+                id="nav-history"
+                data-target="history-screen"
+                class="nav-tab border-b-2 px-1 py-3 text-sm font-medium whitespace-nowrap"
+              >
+                過去申請一覧
+              </button>
+              <button
+                id="nav-new"
+                data-target="main-content"
+                class="nav-tab border-b-2 px-1 py-3 text-sm font-medium whitespace-nowrap"
+              >
+                新規申請
+              </button>
             </div>
+          </div>
+        </nav>
+      </header>
 
-            <!-- 新規申請フォーム -->
-            <div id="main-content" class="page-content bg-white p-6 rounded-lg shadow-lg hidden">
+      <!-- メインコンテンツ -->
+      <main class="mx-auto w-full max-w-7xl p-4 md:p-8">
+        <!-- 過去申請一覧 -->
+        <div
+          id="history-screen"
+          class="page-content rounded-lg bg-white p-6 shadow-lg"
+        >
+          <h1 class="mb-6 text-2xl font-bold text-gray-800">過去申請一覧</h1>
+          <div class="overflow-x-auto rounded-lg border border-gray-200">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th
+                    class="px-4 py-3 text-left text-xs font-medium tracking-wider whitespace-nowrap text-gray-500"
+                  >
+                    申請ID
+                  </th>
+                  <th
+                    class="px-4 py-3 text-left text-xs font-medium tracking-wider whitespace-nowrap text-gray-500"
+                  >
+                    申請日
+                  </th>
+                  <th
+                    class="px-4 py-3 text-left text-xs font-medium tracking-wider whitespace-nowrap text-gray-500"
+                  >
+                    合計金額
+                  </th>
+                  <th
+                    class="px-4 py-3 text-left text-xs font-medium tracking-wider whitespace-nowrap text-gray-500"
+                  >
+                    ステータス
+                  </th>
+                  <th
+                    class="px-4 py-3 text-left text-xs font-medium tracking-wider whitespace-nowrap text-gray-500"
+                  >
+                    詳細
+                  </th>
+                </tr>
+              </thead>
+              <tbody
+                class="divide-y divide-gray-200 bg-white"
+                id="history-table-body"
+              ></tbody>
+            </table>
+          </div>
+        </div>
 
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
-                    <h1 class="text-2xl font-bold text-gray-800">新規申請</h1>
-                </div>
-                <p class="text-gray-600 mb-6">「単価」を入力し、「往復」にチェックを入れると「合計金額」列が自動で計算されます。</p>
+        <!-- 新規申請フォーム -->
+        <div
+          id="main-content"
+          class="page-content hidden rounded-lg bg-white p-6 shadow-lg"
+        >
+          <div
+            class="mb-4 flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center"
+          >
+            <h1 class="text-2xl font-bold text-gray-800">新規申請</h1>
+          </div>
+          <p class="mb-6 text-gray-600">
+            「単価」を入力し、「往復」にチェックを入れると「合計金額」列が自動で計算されます。
+          </p>
 
-                <div class="overflow-x-auto border border-gray-200 rounded-lg">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th scope="col"
-                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 tracking-wider whitespace-nowrap">
-                                    日付</th>
-                                <th scope="col"
-                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 tracking-wider whitespace-nowrap">
-                                    業務・訪問先</th>
-                                <th scope="col"
-                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 tracking-wider whitespace-nowrap">
-                                    利用路線</th>
-                                <th scope="col"
-                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 tracking-wider whitespace-nowrap">
-                                    区間(出発)</th>
-                                <th scope="col"
-                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 tracking-wider whitespace-nowrap">
-                                    区間(到着)</th>
-                                <th scope="col"
-                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 tracking-wider whitespace-nowrap">
-                                    単価</th>
-                                <th scope="col"
-                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 tracking-wider whitespace-nowrap">
-                                    往復</th>
-                                <th scope="col"
-                                    class="px-4 py-3 text-left text-xs font-medium text-gray-700 tracking-wider whitespace-nowrap bg-gray-100 right-0 border-l border-gray-300">
-                                    合計金額</th>
-                                <th scope="col"
-                                    class="px-4 py-3 text-left text-xs font-medium text-gray-500 tracking-wider whitespace-nowrap bg-gray-100">
-                                    削除</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200" id="table-body">
-                        </tbody>
-                    </table>
-                </div>
+          <div class="overflow-x-auto rounded-lg border border-gray-200">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th
+                    scope="col"
+                    class="px-4 py-3 text-left text-xs font-medium tracking-wider whitespace-nowrap text-gray-500"
+                  >
+                    日付
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-4 py-3 text-left text-xs font-medium tracking-wider whitespace-nowrap text-gray-500"
+                  >
+                    業務・訪問先
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-4 py-3 text-left text-xs font-medium tracking-wider whitespace-nowrap text-gray-500"
+                  >
+                    利用路線
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-4 py-3 text-left text-xs font-medium tracking-wider whitespace-nowrap text-gray-500"
+                  >
+                    区間(出発)
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-4 py-3 text-left text-xs font-medium tracking-wider whitespace-nowrap text-gray-500"
+                  >
+                    区間(到着)
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-4 py-3 text-left text-xs font-medium tracking-wider whitespace-nowrap text-gray-500"
+                  >
+                    単価
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-4 py-3 text-left text-xs font-medium tracking-wider whitespace-nowrap text-gray-500"
+                  >
+                    往復
+                  </th>
+                  <th
+                    scope="col"
+                    class="right-0 border-l border-gray-300 bg-gray-100 px-4 py-3 text-left text-xs font-medium tracking-wider whitespace-nowrap text-gray-700"
+                  >
+                    合計金額
+                  </th>
+                  <th
+                    scope="col"
+                    class="bg-gray-100 px-4 py-3 text-left text-xs font-medium tracking-wider whitespace-nowrap text-gray-500"
+                  >
+                    削除
+                  </th>
+                </tr>
+              </thead>
+              <tbody
+                class="divide-y divide-gray-200 bg-white"
+                id="table-body"
+              ></tbody>
+            </table>
+          </div>
 
-                <!-- ボタンエリア -->
-                <div class="mt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                    <button id="add-row-button"
-                        class="bg-blue-500 text-white px-4 py-2 rounded-md font-semibold hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
-                        行を追加
-                    </button>
+          <!-- ボタンエリア -->
+          <div
+            class="mt-4 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center"
+          >
+            <button
+              id="add-row-button"
+              class="rounded-md bg-blue-500 px-4 py-2 font-semibold text-white transition duration-150 ease-in-out hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
+            >
+              行を追加
+            </button>
 
-                    <div class="w-full sm:w-auto flex flex-col items-end">
-                        <button id="submit-button"
-                            class="bg-green-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out disabled:opacity-50 w-full sm:w-auto">
-                            申請する
-                        </button>
-                    </div>
-                </div>
-                <div class="flex justify-end">
-                    <p id="submit-error" class="text-red-500 text-sm mt-2 text-right hidden w-full sm:w-auto"></p>
-                </div>
-
+            <div class="flex w-full flex-col items-end sm:w-auto">
+              <button
+                id="submit-button"
+                class="w-full rounded-md bg-green-600 px-4 py-2 font-semibold text-white transition duration-150 ease-in-out hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:outline-none disabled:opacity-50 sm:w-auto"
+              >
+                申請する
+              </button>
             </div>
-
-        </main>
+          </div>
+          <div class="flex justify-end">
+            <p
+              id="submit-error"
+              class="mt-2 hidden w-full text-right text-sm text-red-500 sm:w-auto"
+            ></p>
+          </div>
+        </div>
+      </main>
     </div>
-
 
     <!-- 申請行のテンプレート -->
     <template id="row-template">
-        <tr class="hover:bg-gray-50">
-            <td class="p-1">
-                <input type="date" data-role="useDate"
-                    class="p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 w-40">
-            </td>
-            <td class="p-1">
-                <input type="text" data-role="purpose"
-                    class="p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 w-48"
-                    placeholder="例: A社訪問">
-            </td>
-            <td class="p-1">
-                <input type="text" data-role="lineName"
-                    class="p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 w-40"
-                    placeholder="例: JR山手線">
-            </td>
-            <td class="p-1">
-                <input type="text" data-role="departure"
-                    class="p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 w-32"
-                    placeholder="例: 新宿">
-            </td>
-            <td class="p-1">
-                <input type="text" data-role="arrival"
-                    class="p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 w-32"
-                    placeholder="例: 渋谷">
-            </td>
-            <td class="p-1">
-                <input type="number" data-role="unitPrice"
-                    class="p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 w-28 text-right"
-                    placeholder="0" min="0">
-            </td>
-            <td class="p-1 text-center">
-                <input type="checkbox" data-role="isRoundTrip" title="往復の場合はチェック"
-                    class="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
-            </td>
-            <td class="p-1 right-0 bg-gray-100 border-l border-gray-300 align-middle">
-                <span data-role="lineTotal" class="block w-32 p-2 font-bold text-gray-900 text-right">
-                    0 円
-                </span>
-            </td>
-            <td class="p-1 text-center align-middle">
-                <button type="button" data-role="deleteRow" title="この行を削除"
-                    class="text-gray-400 hover:text-red-600 transition-colors duration-150">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </td>
-        </tr>
+      <tr class="hover:bg-gray-50">
+        <td class="p-1">
+          <input
+            type="date"
+            data-role="useDate"
+            class="w-40 rounded-md border border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+          />
+        </td>
+        <td class="p-1">
+          <input
+            type="text"
+            data-role="purpose"
+            class="w-48 rounded-md border border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            placeholder="例: A社訪問"
+          />
+        </td>
+        <td class="p-1">
+          <input
+            type="text"
+            data-role="lineName"
+            class="w-40 rounded-md border border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            placeholder="例: JR山手線"
+          />
+        </td>
+        <td class="p-1">
+          <input
+            type="text"
+            data-role="departure"
+            class="w-32 rounded-md border border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            placeholder="例: 新宿"
+          />
+        </td>
+        <td class="p-1">
+          <input
+            type="text"
+            data-role="arrival"
+            class="w-32 rounded-md border border-gray-300 p-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            placeholder="例: 渋谷"
+          />
+        </td>
+        <td class="p-1">
+          <input
+            type="number"
+            data-role="unitPrice"
+            class="w-28 rounded-md border border-gray-300 p-2 text-right shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            placeholder="0"
+            min="0"
+          />
+        </td>
+        <td class="p-1 text-center">
+          <input
+            type="checkbox"
+            data-role="isRoundTrip"
+            title="往復の場合はチェック"
+            class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+          />
+        </td>
+        <td
+          class="right-0 border-l border-gray-300 bg-gray-100 p-1 align-middle"
+        >
+          <span
+            data-role="lineTotal"
+            class="block w-32 p-2 text-right font-bold text-gray-900"
+          >
+            0 円
+          </span>
+        </td>
+        <td class="p-1 text-center align-middle">
+          <button
+            type="button"
+            data-role="deleteRow"
+            title="この行を削除"
+            class="text-gray-400 transition-colors duration-150 hover:text-red-600"
+          >
+            <svg
+              class="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              ></path>
+            </svg>
+          </button>
+        </td>
+      </tr>
     </template>
 
     <div id="details-modal" class="fixed inset-0 z-50 hidden overflow-y-auto">
-        <div id="modal-overlay" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+      <div
+        id="modal-overlay"
+        class="bg-opacity-75 fixed inset-0 bg-gray-500 transition-opacity"
+      ></div>
 
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="relative bg-white rounded-lg shadow-xl transform transition-all sm:my-8 w-full max-w-4xl">
-                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 border-b border-gray-200">
-                    <div class="sm:flex sm:items-start">
-                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                            <h3 class="text-xl leading-6 font-medium text-gray-900" id="modal-title">
-                                申請詳細
-                            </h3>
-                            <p class="text-sm text-gray-500 mt-1">申請ID: <span id="modal-appl-id" class="font-mono"></span></p>
-                        </div>
-                        <button id="modal-close-button-header" type="button" class="absolute top-3 right-3 text-gray-400 hover:text-gray-500">
-                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="px-4 py-5 sm:p-6">
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-                        <div>
-                            <dt class="text-sm font-medium text-gray-500">申請者</dt>
-                            <dd class="mt-1 text-sm text-gray-900" id="modal-emp-name"></dd>
-                        </div>
-                        <div>
-                            <dt class="text-sm font-medium text-gray-500">部署</dt>
-                            <dd class="mt-1 text-sm text-gray-900" id="modal-dept-name"></dd>
-                        </div>
-                        <div>
-                            <dt class="text-sm font-medium text-gray-500">申請日</dt>
-                            <dd class="mt-1 text-sm text-gray-900" id="modal-appl-date"></dd>
-                        </div>
-                        <div>
-                            <dt class="text-sm font-medium text-gray-500">ステータス</dt>
-                            <dd class="mt-1 text-sm text-gray-900" id="modal-status"></dd>
-                        </div>
-                    </div>
-
-                    <div class="overflow-x-auto border border-gray-200 rounded-lg">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 tracking-wider">日付</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 tracking-wider">業務・訪問先</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 tracking-wider">利用路線</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 tracking-wider">区間(出発)</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 tracking-wider">区間(到着)</th>
-                                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 tracking-wider">単価</th>
-                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 tracking-wider">往復</th>
-                                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 tracking-wider">合計金額</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200" id="modal-details-table-body">
-                                </tbody>
-                            <tfoot class="bg-gray-50">
-                                <tr>
-                                    <td colspan="7" class="px-4 py-3 text-right text-sm font-bold text-gray-700">総合計</td>
-                                    <td class="px-4 py-3 text-right text-sm font-bold text-gray-900" id="modal-total-amount">0 円</td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-
-                </div>
-
-                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                    <button id="modal-close-button-footer" type="button"
-                        class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                        閉じる
-                    </button>
-                </div>
+      <div class="flex min-h-screen items-center justify-center p-4">
+        <div
+          class="relative w-full max-w-4xl transform rounded-lg bg-white shadow-xl transition-all sm:my-8"
+        >
+          <div
+            class="border-b border-gray-200 bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4"
+          >
+            <div class="sm:flex sm:items-start">
+              <div class="mt-3 w-full text-center sm:mt-0 sm:ml-4 sm:text-left">
+                <h3
+                  class="text-xl leading-6 font-medium text-gray-900"
+                  id="modal-title"
+                >
+                  申請詳細
+                </h3>
+                <p class="mt-1 text-sm text-gray-500">
+                  申請ID: <span id="modal-appl-id" class="font-mono"></span>
+                </p>
+              </div>
+              <button
+                id="modal-close-button-header"
+                type="button"
+                class="absolute top-3 right-3 text-gray-400 hover:text-gray-500"
+              >
+                <svg
+                  class="h-6 w-6"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
             </div>
+          </div>
+
+          <div class="px-4 py-5 sm:p-6">
+            <div class="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
+              <div>
+                <dt class="text-sm font-medium text-gray-500">申請者</dt>
+                <dd class="mt-1 text-sm text-gray-900" id="modal-emp-name"></dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">部署</dt>
+                <dd
+                  class="mt-1 text-sm text-gray-900"
+                  id="modal-dept-name"
+                ></dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">申請日</dt>
+                <dd
+                  class="mt-1 text-sm text-gray-900"
+                  id="modal-appl-date"
+                ></dd>
+              </div>
+              <div>
+                <dt class="text-sm font-medium text-gray-500">ステータス</dt>
+                <dd class="mt-1 text-sm text-gray-900" id="modal-status"></dd>
+              </div>
+            </div>
+
+            <div class="overflow-x-auto rounded-lg border border-gray-200">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th
+                      class="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500"
+                    >
+                      日付
+                    </th>
+                    <th
+                      class="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500"
+                    >
+                      業務・訪問先
+                    </th>
+                    <th
+                      class="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500"
+                    >
+                      利用路線
+                    </th>
+                    <th
+                      class="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500"
+                    >
+                      区間(出発)
+                    </th>
+                    <th
+                      class="px-4 py-3 text-left text-xs font-medium tracking-wider text-gray-500"
+                    >
+                      区間(到着)
+                    </th>
+                    <th
+                      class="px-4 py-3 text-right text-xs font-medium tracking-wider text-gray-500"
+                    >
+                      単価
+                    </th>
+                    <th
+                      class="px-4 py-3 text-center text-xs font-medium tracking-wider text-gray-500"
+                    >
+                      往復
+                    </th>
+                    <th
+                      class="px-4 py-3 text-right text-xs font-medium tracking-wider text-gray-500"
+                    >
+                      合計金額
+                    </th>
+                  </tr>
+                </thead>
+                <tbody
+                  class="divide-y divide-gray-200 bg-white"
+                  id="modal-details-table-body"
+                ></tbody>
+                <tfoot class="bg-gray-50">
+                  <tr>
+                    <td
+                      colspan="7"
+                      class="px-4 py-3 text-right text-sm font-bold text-gray-700"
+                    >
+                      総合計
+                    </td>
+                    <td
+                      class="px-4 py-3 text-right text-sm font-bold text-gray-900"
+                      id="modal-total-amount"
+                    >
+                      0 円
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+
+          <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+            <button
+              id="modal-close-button-footer"
+              type="button"
+              class="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+            >
+              閉じる
+            </button>
+          </div>
         </div>
+      </div>
     </div>
 
     <script type="module" src="app.js"></script>
-
-</body>
-
+  </body>
 </html>

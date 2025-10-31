@@ -1,0 +1,26 @@
+{
+  "version": "5",
+  "specifiers": {
+    "npm:prettier-plugin-tailwindcss@~0.7.1": "0.7.1_prettier@3.6.2",
+    "npm:prettier@*": "3.6.2",
+    "npm:prettier@^3.6.2": "3.6.2"
+  },
+  "npm": {
+    "prettier-plugin-tailwindcss@0.7.1_prettier@3.6.2": {
+      "integrity": "sha512-Bzv1LZcuiR1Sk02iJTS1QzlFNp/o5l2p3xkopwOrbPmtMeh3fK9rVW5M3neBQzHq+kGKj/4LGQMTNcTH4NGPtQ==",
+      "dependencies": [
+        "prettier"
+      ]
+    },
+    "prettier@3.6.2": {
+      "integrity": "sha512-I7AIg5boAr5R0FFtJ6rCfD+LFsWHp81dolrFD8S79U9tb8Az2nGrJncnMSnys+bpQJfRUzqs9hnA81OAA3hCuQ==",
+      "bin": true
+    }
+  },
+  "workspace": {
+    "dependencies": [
+      "npm:prettier-plugin-tailwindcss@~0.7.1",
+      "npm:prettier@^3.6.2"
+    ]
+  }
+}

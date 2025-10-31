@@ -1,0 +1,10 @@
+{
+  "imports": {
+    "prettier": "npm:prettier@^3.6.2",
+    "prettier-plugin-tailwindcss": "npm:prettier-plugin-tailwindcss@^0.7.1"
+  },
+  "nodeModulesDir": "auto",
+  "tasks": {
+    "format": "deno run --allow-read --allow-write --allow-env --allow-sys npm:prettier --write '**/*.{ts,tsx,js,jsx,json,css,html}' --plugin=prettier-plugin-tailwindcss"
+  }
+}
